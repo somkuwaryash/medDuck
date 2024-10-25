@@ -6,23 +6,52 @@ const MODEL_ID = "kothariyashhh/GenAi-Texttoimage"
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Color blind friendly prompt enhancer
-function enhancePromptForColorBlind(basePrompt: string): string {
-  const accessibilityPrompt = `Create a highly accessible image with: 
-    - Strong contrast between elements
-    - Clear distinct patterns and textures
-    - Well-defined shapes and boundaries
-    - High clarity and sharpness
-    - Easily distinguishable elements
-    - Clear separation between foreground and background
-    For the following scene: ${basePrompt}
-    Make sure the image is clear and distinguishable for color-blind viewers by using:
-    - Strong tonal contrasts
-    - Different textures for different elements
-    - Clear outlines and borders
-    - Distinct patterns where needed`
+// Enhanced prompt generator with better contrast control
+function enhancePrompt(
+  basePrompt: string,
+  isColorBlind: boolean,
+  contrastLevel: 'high' | 'medium' | 'low'
+): string {
+  if (!isColorBlind) return basePrompt
 
-  return accessibilityPrompt
+  const contrastSettings = {
+    high: {
+      contrast: "maximum contrast",
+      separation: "strong separation between elements",
+      emphasis: "bold, clear outlines"
+    },
+    medium: {
+      contrast: "moderate contrast",
+      separation: "clear separation between elements",
+      emphasis: "defined outlines"
+    },
+    low: {
+      contrast: "subtle contrast",
+      separation: "gentle separation between elements",
+      emphasis: "soft outlines"
+    }
+  }[contrastLevel]
+
+  return `Create a highly accessible image with:
+    - ${contrastSettings.contrast}
+    - ${contrastSettings.separation}
+    - ${contrastSettings.emphasis}
+    - Clear distinct patterns and textures
+    - Well-defined shapes
+    For the following scene: ${basePrompt}`
+}
+
+// Updated negative prompts based on contrast level
+function getNegativePrompt(contrastLevel: 'high' | 'medium' | 'low'): string {
+  const baseNegativePrompts = "unclear boundaries, faded, washed out, indistinct patterns"
+  
+  const contrastSpecificPrompts = {
+    high: "low contrast, similar colors, muddy colors",
+    medium: "extreme contrast, oversaturated, muddy colors",
+    low: "harsh contrast, oversaturated, stark boundaries"
+  }[contrastLevel]
+
+  return `${baseNegativePrompts}, ${contrastSpecificPrompts}`
 }
 
 export async function generateImage(
@@ -34,13 +63,11 @@ export async function generateImage(
   } = { enhanceForColorBlind: true, contrastLevel: 'high' }
 ): Promise<string> {
   let retries = 0
-
-  const finalPrompt = options.enhanceForColorBlind 
-    ? enhancePromptForColorBlind(prompt)
-    : prompt
-
-  // Adjust negative prompt for accessibility
-  const accessibleNegativePrompt = "blurry, low contrast, similar colors, muddy colors, unclear boundaries, faded, washed out, indistinct patterns, unclear shapes"
+  const finalPrompt = enhancePrompt(
+    prompt,
+    options.enhanceForColorBlind ?? true,
+    options.contrastLevel ?? 'high'
+  )
 
   while (retries < maxRetries) {
     try {
@@ -48,9 +75,10 @@ export async function generateImage(
         model: MODEL_ID,
         inputs: finalPrompt,
         parameters: {
-          negative_prompt: accessibleNegativePrompt,
+          negative_prompt: getNegativePrompt(options.contrastLevel ?? 'high'),
           num_inference_steps: 30,
-          guidance_scale: 7.5,
+          guidance_scale: options.contrastLevel === 'high' ? 8.5 : 
+                         options.contrastLevel === 'medium' ? 7.5 : 6.5,
         }
       })
 
@@ -60,11 +88,9 @@ export async function generateImage(
 
     } catch (error) {
       console.error(`Attempt ${retries + 1} failed:`, error)
-      
       if (retries === maxRetries - 1) {
         throw new Error('Failed to generate image after maximum retries')
       }
-      
       await wait(Math.pow(2, retries) * 1000)
       retries++
     }

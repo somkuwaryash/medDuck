@@ -5,7 +5,7 @@ const inference = new HfInference(process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY)
 
 // Using a different medical model that's more reliable
 // You can switch between these models
-const MODEL_ID = "google/flan-t5-base" // Alternative: "google/flan-t5-base"
+const MODEL_ID = "mistralai/Mistral-7B-Instruct-v0.3" // Alternative: "google/flan-t5-base"
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 

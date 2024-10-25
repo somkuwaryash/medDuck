@@ -24,7 +24,6 @@ export default function ImageGeneration() {
       setImageUrl(generatedImageUrl)
     } catch (err) {
       setError('Failed to generate image. Please try again.')
-      console.error(err)
     } finally {
       setIsLoading(false)
     }
