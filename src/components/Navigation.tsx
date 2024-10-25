@@ -5,27 +5,32 @@ import { usePathname } from 'next/navigation'
 
 export function Navigation() {
   const pathname = usePathname()
-
-  const isActive = (path: string) => {
-    return pathname === path ? 'bg-blue-700' : ''
-  }
-
+  
   return (
-    <nav className="bg-blue-600 text-white">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-4">
-            <Link 
-              href="/"
-              className={`px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 ${isActive('/')}`}
-            >
-              Chat
-            </Link>
+    <nav className="bg-white shadow-sm">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          <span className="text-xl font-semibold">AI Assistant</span>
+          <div className="flex gap-4">
             <Link 
               href="/image"
-              className={`px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 ${isActive('/image')}`}
+              className={`px-3 py-2 rounded-md transition-colors ${
+                pathname === '/image' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'hover:bg-gray-100'
+              }`}
             >
-              Image Generation
+              Generate Images
+            </Link>
+            <Link 
+              href="/chat"
+              className={`px-3 py-2 rounded-md transition-colors ${
+                pathname === '/chat' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              Chat
             </Link>
           </div>
         </div>
