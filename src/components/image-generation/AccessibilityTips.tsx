@@ -74,6 +74,7 @@ export function AccessibilityTips() {
         <div className="px-6 pb-4 space-y-4">
           {tips.map((tip, index) => {
             const Icon = tip.icon
+            console.log(index);
             return (
               <div 
                 key={tip.title}
