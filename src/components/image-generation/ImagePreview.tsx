@@ -1,7 +1,6 @@
-// components/image-generation/ImagePreview.tsx
 import { useState } from 'react'
+import { Loader2, AlertCircle, Info, ImageIcon, Wand2 } from 'lucide-react'
 import { analyzeImage, getBase64FromDataUrl } from '@/utils/imageAnalysis'
-import { Loader2, AlertCircle, Info } from 'lucide-react'
 
 interface ImagePreviewProps {
   imageUrl: string | null
@@ -21,6 +20,7 @@ export function ImagePreview({
   const [analysis, setAnalysis] = useState<string>('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string>('')
+  const [showOverlay, setShowOverlay] = useState(false)
 
   const handleAnalyzeImage = async () => {
     if (!imageUrl) return
@@ -41,83 +41,99 @@ export function ImagePreview({
 
   return (
     <div className="space-y-4">
-      {/* Image Container */}
-      <div className="bg-gray-800/50 border border-gray-700 rounded-lg aspect-square flex flex-col items-center justify-center overflow-hidden p-4">
+      {/* Main Image Container with Hover Effects */}
+      <div 
+        className="relative bg-gray-900/40 border border-gray-800/60 rounded-xl overflow-hidden
+                   transition-all duration-300 group"
+        onMouseEnter={() => setShowOverlay(true)}
+        onMouseLeave={() => setShowOverlay(false)}
+      >
         {isLoading ? (
-          <div className="text-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-            <p className="text-gray-400">Creating your masterpiece...</p>
+          <div className="flex flex-col items-center justify-center h-96 space-y-4">
+            <div className="relative">
+              <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+              <div className="absolute inset-0 animate-pulse-ring" />
+            </div>
+            <p className="text-gray-400 animate-pulse">Creating your masterpiece...</p>
           </div>
         ) : imageUrl ? (
-          <div className="w-full h-full flex flex-col items-center justify-between">
-            <div className="w-full h-[80%] mb-4 flex items-center justify-center">
-              <img 
-                src={imageUrl} 
-                alt="Generated artwork" 
-                className="max-w-full max-h-full object-contain rounded-lg"
-              />
+          <div className="relative aspect-square">
+            <img 
+              src={imageUrl} 
+              alt="Generated artwork" 
+              className="w-full h-full object-cover transition-transform duration-500
+                       group-hover:scale-105"
+            />
+            {/* Hover Overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent
+                          transition-opacity duration-300 flex flex-col justify-end p-6
+                          ${showOverlay ? 'opacity-100' : 'opacity-0'}`}>
+              <button
+                onClick={handleAnalyzeImage}
+                disabled={isAnalyzing}
+                className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg
+                         py-3 px-4 text-white font-medium flex items-center justify-center gap-2
+                         hover:bg-white/20 transition-all duration-200 group
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Wand2 className={`w-4 h-4 transition-all duration-200 
+                                ${isAnalyzing ? 'animate-spin' : 'group-hover:rotate-12'}`} />
+                {isAnalyzing ? 'Analyzing...' : 'Analyze Image'}
+              </button>
             </div>
-            
-            <button
-              onClick={handleAnalyzeImage}
-              disabled={isAnalyzing}
-              className={`w-full px-4 py-2 rounded-lg font-medium transition-colors
-                ${isAnalyzing 
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            >
-              {isAnalyzing ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Analyzing...
-                </span>
-              ) : 'Analyze Image'}
-            </button>
           </div>
         ) : (
-          <div className="text-center space-y-2">
+          <div className="flex flex-col items-center justify-center h-96 space-y-3">
+            <div className="p-4 rounded-full bg-gray-800/50">
+              <ImageIcon className="w-8 h-8 text-gray-400" />
+            </div>
             <p className="text-gray-400">Your creation will appear here</p>
-            <p className="text-gray-500 text-sm">Generate an image to get started</p>
           </div>
         )}
       </div>
-      
-      {/* Generation Error */}
+
+      {/* Error Message */}
       {error && (
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3
+                      animate-slideIn">
+          <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
           <p className="text-red-400">{error}</p>
         </div>
       )}
 
       {/* Analysis Error */}
       {analysisError && (
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3
+                      animate-slideIn">
+          <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
           <p className="text-red-400">{analysisError}</p>
         </div>
       )}
 
-      {/* Analysis Results */}
+      {/* Analysis Results with Animation */}
       {analysis && (
-        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+        <div className="bg-gray-900/40 border border-gray-800/60 rounded-lg p-4 
+                      transform transition-all duration-300 hover:border-gray-700/60">
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="font-medium text-gray-200">Image Analysis</h3>
+            <h3 className="font-medium text-gray-200">Analysis Results</h3>
             {isAnalyzing && (
-              <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
             )}
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">{analysis}</p>
         </div>
       )}
 
-      {/* Accessibility Info */}
+      {/* Accessibility Info Badge */}
       {imageUrl && isColorBlindMode && (
-        <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 flex items-start gap-3">
-          <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-blue-400">
-            <p className="font-medium mb-1">Accessibility Optimized</p>
-            <p>This image has been enhanced for color blind accessibility with {contrastLevel} contrast settings.</p>
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex items-start gap-3
+                      animate-fadeIn">
+          <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-blue-400 font-medium mb-1">Accessibility Optimized</p>
+            <p className="text-blue-400/80 text-sm">
+              Enhanced for color blind accessibility with {contrastLevel} contrast
+            </p>
           </div>
         </div>
       )}
