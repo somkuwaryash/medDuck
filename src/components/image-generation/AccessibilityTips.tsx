@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 
 export function AccessibilityTips() {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const tips = [
     {
