@@ -1,5 +1,5 @@
 // components/image-generation/AccessibilityControls.tsx
-import { SlidersHorizontal, Eye } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 
 interface AccessibilityProps {
   isColorBlindMode: boolean;

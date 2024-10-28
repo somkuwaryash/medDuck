@@ -38,6 +38,7 @@ export default function ChatPage() {
         sender: 'bot'
       }])
     } catch (error) {
+       console.error('Error generating response:', error)
       setMessages(prev => [...prev, {
         id: Date.now(),
         text: "I apologize, but I'm having trouble right now. Could you try asking again?",
