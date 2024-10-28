@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import { MessageList } from '@/components/MessageList'
+import { ChatInput } from '@/components/ChatInput'
 import { generateMedicalResponse } from '@/utils/api'
 import { Message } from '@/types/chat'
 
@@ -17,7 +18,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault() // Prevent form submission
+    e.preventDefault()
     
     if (!inputMessage.trim() || isLoading) return
 
@@ -38,7 +39,7 @@ export default function ChatPage() {
         sender: 'bot'
       }])
     } catch (error) {
-       console.error('Error generating response:', error)
+      console.error('Error generating response:', error)
       setMessages(prev => [...prev, {
         id: Date.now(),
         text: "I apologize, but I'm having trouble right now. Could you try asking again?",
@@ -60,27 +61,12 @@ export default function ChatPage() {
             
             <MessageList messages={messages} />
             
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-800">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 p-2 rounded-lg bg-gray-800 text-gray-100 
-                           border border-gray-700 focus:ring-2 focus:ring-blue-500 
-                           focus:border-transparent outline-none"
-                />
-                <button
-                  type="button"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium 
-                           rounded-lg px-4 py-2 transition-colors duration-200 
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            </form>
+            <ChatInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              handleSubmit={handleSendMessage}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       </div>

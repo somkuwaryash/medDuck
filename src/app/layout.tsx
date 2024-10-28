@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen`}>
         <Header />
-        <div className="pt-16"> {/* Add padding top to account for fixed header */}
+        <div className="pt-16"> 
           {children}
         </div>
       </body>

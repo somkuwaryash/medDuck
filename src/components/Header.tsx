@@ -41,44 +41,45 @@ export function Header() {
                      transition-colors duration-200"
           >
             <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">A</span>
+              <span className="text-white font-bold text-xl">DD</span>
             </div>
             <span className="font-semibold text-lg hidden sm:block">Doctor Duck</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`px-4 py-2 rounded-lg flex items-center space-x-2 
-                           transition-colors duration-200 
-                           ${isActive(item.href)
-                             ? 'bg-gray-800 text-white'
-                             : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
-                >
-                  <Icon size={18} />
-                  <span>{item.name}</span>
-                </Link>
-              )
-            })}
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-800 
-                     transition-colors duration-200"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          <div className="flex items-center space-x-4">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1">
+              {navigationItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`px-4 py-2 rounded-lg flex items-center space-x-2 
+                             transition-colors duration-200 
+                             ${isActive(item.href)
+                               ? 'bg-gray-800 text-white'
+                               : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
+                  >
+                    <Icon size={18} />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+            </nav>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-800 
+                       transition-colors duration-200"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
